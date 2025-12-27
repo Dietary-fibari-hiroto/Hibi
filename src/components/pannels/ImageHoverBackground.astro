@@ -1,0 +1,280 @@
+---
+interface Props{
+    items:{
+        label:string;
+        image:string;
+        path:string;
+        date:string;
+    }[];
+    defaultImage?:string;
+    transitionDuration?:number;
+}
+
+const {
+    items,
+    defaultImage = items[0]?.image ?? '',
+    transitionDuration = 500
+}= Astro.props;
+---
+
+<div class="image-hover-container" data-default-image={defaultImage}>
+    <!--バックグラウンド画像レイヤー-->
+    <div class="background-layer">
+        <div class="bg-image current" style = {`background-image:url('${defaultImage}')`}/>
+        <div class="bg-image next"/>
+    </div>
+
+    <!--オーバーレイ -->
+    <div class="overlay"/>
+
+    <!--コンテンツ -->
+    <div class="content">
+      <slot/>
+        <nav class="hover-nav">
+            {items.map((item,index)=>(
+                <a
+                href={item.path}
+                class="hover-item"
+                data-image={item.image}
+                data-index={index}
+                >
+                    <img class="img--lg-vertical" src = {item.image}/>
+                    <p class="text-3xl">{item.label}</p>
+                    <p class="text-base" >{item.date}</p>
+                </a>
+            ))}
+        </nav>
+        
+    </div>
+</div>
+
+<style lang = "scss" define:vars={{transitionDuration:`${transitionDuration}ms`}}>
+    .image-hover-container{
+    position:relative;
+    width:100%;
+    min-height: 100lvh;
+    overflow: hidden;
+    }
+    .background-layer{
+        position:absolute;
+        inset:0;
+        z-index:0;
+    }
+
+    .bg-image{
+        position:absolute;
+        inset:0;
+        background-size:cover;
+        background-position:center;
+        background-repeat: no-repeat;
+           transition: opacity var(--transitionDuration) ease-in-out,
+                transform var(--transitionDuration) ease-out; 
+    }
+    .bg-image.current{
+    opacity:1;
+    transform:scale(1)
+    }
+    
+  .bg-image.next {
+    opacity: 0;
+    transform: scale(1.05);
+  }
+
+  .bg-image.fade-in {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  .bg-image.fade-out {
+    opacity: 0;
+    transform: scale(0.98);
+  }
+
+  .overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      to bottom,
+      rgba(0, 0, 0, 0.3) 0%,
+      rgba(0, 0, 0, 0.5) 100%
+    );
+    z-index: 1;
+  }
+
+  .content {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+    justify-content: center;
+    min-height: 100vh;
+    padding: 2rem;
+    overflow-x: scroll;
+  }
+
+  .hover-nav {
+    display: flex;
+    gap: 3rem;
+    padding:0 5rem;
+    justify-content: start;
+    text-align: center;
+  }
+
+  .hover-item {
+    color: white;
+    padding: 1rem 2rem;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(4px);
+    transition: all 0.3s ease;
+    cursor: pointer;
+    
+    /* タッチデバイス向け */
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+  }
+
+  .hover-item:hover,
+  .hover-item:focus,
+  .hover-item.active {
+    background: rgba(255, 255, 255, 0.25);
+    border-color: rgba(255, 255, 255, 0.6);
+    transform: translateX(10px);
+  }
+
+  /* レスポンシブ */
+  @media (max-width: 768px) {
+    .hover-item {
+      font-size: 1.2rem;
+      padding: 0.8rem 1.5rem;
+    }
+  }
+</style>
+
+<script>
+    class ImageHoverBackground{
+        container: HTMLElement;
+        currentBg: HTMLElement;
+        nextBg: HTMLElement;
+        items: NodeListOf<HTMLElement>;
+        defaultImage: string;
+        isAnimating: boolean = false;
+        currentImage: string;
+        touchStartY: number = 0;
+
+        constructor(container:HTMLElement){
+            this.container = container;
+            this.currentBg = container.querySelector('.bg-image.current')!;
+            this.nextBg = container.querySelector('.bg-image.next')!;
+            this.items = container.querySelectorAll('.hover-item');
+            this.defaultImage = container.dataset.defaultImage || '';
+            this.currentImage = this.defaultImage;
+            
+            this.init();
+        }
+    init() {
+      // プリロード画像
+      this.preloadImages();
+      
+      this.items.forEach((item) => {
+        const image = item.dataset.image || '';
+        
+        // マウスイベント
+        item.addEventListener('mouseenter', () => this.changeImage(image));
+        item.addEventListener('mouseleave', () => this.changeImage(this.defaultImage));
+        
+        // タッチイベント（スマホ対応）
+        item.addEventListener('touchstart', (e) => {
+          this.touchStartY = (e as TouchEvent).touches[0].clientY;
+          this.changeImage(image);
+          item.classList.add('active');
+        }, { passive: true });
+        
+        item.addEventListener('touchend', () => {
+          // 少し遅延させてから戻す（UX向上）
+          setTimeout(() => {
+            this.changeImage(this.defaultImage);
+            item.classList.remove('active');
+          }, 300);
+        });
+        
+        item.addEventListener('touchmove', (e) => {
+          // スクロール中は元に戻す
+          const touchY = (e as TouchEvent).touches[0].clientY;
+          if (Math.abs(touchY - this.touchStartY) > 10) {
+            this.changeImage(this.defaultImage);
+            item.classList.remove('active');
+          }
+        }, { passive: true });
+
+        // フォーカスイベント（アクセシビリティ）
+        item.addEventListener('focus', () => this.changeImage(image));
+        item.addEventListener('blur', () => this.changeImage(this.defaultImage));
+      });
+    }
+
+    preloadImages() {
+      const images = new Set<string>();
+      images.add(this.defaultImage);
+      
+      this.items.forEach((item) => {
+        const image = item.dataset.image;
+        if (image) images.add(image);
+      });
+
+      images.forEach((src) => {
+        const img = new Image();
+        img.src = src;
+      });
+    }
+
+    changeImage(newImage: string) {
+      if (this.currentImage === newImage || this.isAnimating) return;
+      
+      this.isAnimating = true;
+      
+      // 次の画像を設定
+      this.nextBg.style.backgroundImage = `url('${newImage}')`;
+      
+      // アニメーション開始
+      requestAnimationFrame(() => {
+        this.currentBg.classList.add('fade-out');
+        this.nextBg.classList.add('fade-in');
+        
+        // トランジション完了後
+        const duration = parseInt(
+          getComputedStyle(this.container).getPropertyValue('--transitionDuration') || '500'
+        );
+        
+        setTimeout(() => {
+          // 現在と次を入れ替え
+          this.currentBg.style.backgroundImage = `url('${newImage}')`;
+          this.currentBg.classList.remove('fade-out');
+          this.nextBg.classList.remove('fade-in');
+          
+          this.currentImage = newImage;
+          this.isAnimating = false;
+        }, duration);
+      });
+    }
+  }
+
+  // 初期化
+  document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll<HTMLElement>('.image-hover-container').forEach((container) => {
+      new ImageHoverBackground(container);
+    });
+  });
+
+  // View Transitions対応（Astro）
+  document.addEventListener('astro:page-load', () => {
+    document.querySelectorAll<HTMLElement>('.image-hover-container').forEach((container) => {
+      if (!(container as any)._imageHover) {
+        (container as any)._imageHover = new ImageHoverBackground(container);
+      }
+    });
+  });
+
+</script>

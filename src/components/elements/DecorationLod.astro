@@ -1,0 +1,35 @@
+---
+const {isVertical=false,isBlue} = Astro.props;
+---
+
+
+<div class={`lod ${isVertical ? "vertical" : "horizontal"} ${isBlue?"blue":"light-blue"}`}  />
+
+
+
+<style lang ="scss">
+    $lod-width:15rem;
+    $lod-height:2rem;
+.lod {
+  background-color: azure;
+
+  &.vertical {
+    width: $lod-height;
+    height: $lod-width;
+  }
+
+  &.horizontal {
+    width: $lod-width;
+    height: $lod-height;
+  }
+
+  &.blue{
+    background-color: #0444A4;
+  }
+  &.light-blue{
+    background-color: #71A2D8;
+  }
+}
+
+</style>
+

@@ -1,0 +1,70 @@
+---
+import { ImagesRoutes } from '../../assets/images/ImagesRoutes';
+import { DecorationLod } from '../../components';
+const bg = ImagesRoutes.IMG_0168;
+---  
+  
+  <section class="section-frame hero-section" style = {
+  `background-image:
+  linear-gradient(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.1)),
+   url(${bg});`}>
+   <div class="lod lod--top-left"><DecorationLod isVertical isBlue="true"/></div>
+        <div class="lod lod--bottom-right"><DecorationLod isVertical/></div>
+
+    <div class="absolute-center hero-section__title">
+      <p class="font-bold text-6xl">日々写真館</p>
+      <p class="text-xl">気ままに切り取る、今日の景色</p>
+    </div>
+    <div class="absolute-center">
+      <div class="hero-section__title-decoration">
+        <div class="lod lod--top-right"><DecorationLod isBlue="true"/></div>
+        <div class="lod lod--bottom-left"><DecorationLod/></div>
+      </div>
+    </div>
+
+
+  </section>
+
+  
+<style lang="scss">
+  .hero-section{
+    position:relative;
+    background-size: cover;
+    background-position: center;
+
+    &__title{
+      border: 1px white solid;
+      padding:5rem 6rem;
+      text-align:center;
+      white-space: nowrap;
+      &-decoration{
+        position:relative;
+        width:40rem;
+        height: 15rem;
+      }
+    }
+    
+  }
+.lod{
+  position: absolute;
+}
+
+.lod--top-right {
+  top: 0;
+  right: 0;
+}
+
+.lod--bottom-left {
+  bottom: 0;
+  left: 0;
+}
+.lod--top-left {
+  top: 10%;
+  left: 20%;
+}
+
+.lod--bottom-right {
+  bottom: 10%;
+  right: 20%;
+}
+</style>

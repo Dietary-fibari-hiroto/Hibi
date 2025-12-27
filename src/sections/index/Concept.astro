@@ -1,0 +1,80 @@
+---
+import { ImagesRoutes } from "../../assets/images/ImagesRoutes"
+---
+
+<section class="concept-section">
+    <div class="concept-section__inner">
+        <div class="concept-section__concept">
+        
+            <div class="concept-section__concept-text">
+                <p class="text-3xl">気ままに切り取る、今日の景色。</p>
+                <p class="text-md">Casually capturing today’s scenery.</p>
+            </div>
+            <img class="img--md-vertical concept-section__concept-img" src = {ImagesRoutes.IMG_7243}/>
+        </div>
+        <div class="concept-section__theme">
+            <img class="img--lg-vertical concept-section__theme-img" src = {ImagesRoutes.IMG_2883}/>
+            <p class="concept-section__theme-text text-md">気になった景色をそのまま撮って、少しだけ色を整えて、“こんなふうに見えていたよ” という世界を残しています。</p>
+        </div>
+        <img src={ImagesRoutes.IMG_7269} class="concept-section__figure img--md-horizontal"/>
+    </div>
+</section>
+
+
+<style lang ="scss">
+    .concept-section{
+        padding:10rem clamp(2rem, 2rem, 3rem);
+        height: 1080px;
+        display: flex;
+        &__inner{
+            position:relative;
+            width:100%;
+            height:100%;
+        }
+        &__concept{
+            position: absolute;
+            width:40rem;
+            height: clamp(300px, 25vw, 500px);
+            right:0;
+            &-img{
+                position:absolute;
+                right:0;
+                z-index: 0;
+                filter: brightness(.8);
+            }
+            &-text{
+                position:absolute;
+                left:0;
+                top:50%;
+                transform: translateY(-50%);
+                z-index:1;
+            }
+        }
+        &__theme{
+            position: absolute;
+            width:100%;
+            height: clamp(400px, 30vw, 800px);
+            left:0;
+            top:50%;
+            transform: translateY(-50%);
+            &-img{
+                position:absolute;
+                left:0;
+                z-index: 0;
+            }
+            &-text{
+                position:absolute;
+                left:30%;
+                bottom:20%;
+                transform: translateY(-50%);
+                z-index:1;
+                max-width: 35rem;
+            }
+        }
+        &__figure{
+            position:absolute;
+            right:0;
+            bottom:0;
+        }
+    }
+</style>

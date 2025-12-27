@@ -1,0 +1,28 @@
+---
+import { ImagesRoutes } from "../assets/images/ImagesRoutes"
+const bg = ImagesRoutes.IMG_7290;
+---
+
+<footer class="section-frame" style={`background-image:
+linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2)),
+url(${bg})`}>
+    <p class="absolute-center text-3xl">日々写真館.DAWN</p>
+    <p class="copyright-text">Copyright 2026/12/27 Dawn All Rights Reserved.</p>
+</footer>
+
+
+<style lang = "scss">
+    footer{
+        position: relative;
+        background-size: cover;
+        background-position: center;
+    }
+
+    .copyright-text{
+        position: absolute;
+        bottom:0;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        white-space: nowrap;
+    }
+</style>

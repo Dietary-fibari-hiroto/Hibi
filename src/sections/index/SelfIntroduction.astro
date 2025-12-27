@@ -1,0 +1,32 @@
+---
+import { ImagesRoutes } from "../../assets/images/ImagesRoutes"
+---
+
+
+<section class="SelfIntroduction-section section-frame">
+    <img class="img--lg-horizontal" src = {ImagesRoutes.IMG_7043}/>
+    <div class="SelfIntroduction-section__text">
+        <p class="text-3xl">なまえ:ひろと</p>
+        <p class="text-md">エンジニア志望の学生です。カメラについての特別な知識や技術があるわけではありませんが、目に映ったものを気の向くままに撮り、自分の感じる世界観に近づけるよう、ゆるくレタッチしています。写真を見てもらう場所がほしかったことと、Web制作のスキルを磨くために、このサイトをつくりました。</p>
+    </div>
+</section>
+
+<style lang="scss">
+    .SelfIntroduction-section{
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        &__text{
+            max-width:40rem;
+            box-sizing: border-box;
+        
+            padding:2rem;
+        }
+    }
+
+    @media(max-width:1024px){
+        .SelfIntroduction-section{
+            flex-direction: column;
+        }
+    }
+</style>
